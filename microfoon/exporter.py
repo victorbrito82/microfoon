@@ -27,7 +27,7 @@ class ObsidianExporter:
 **Status**: {recording.status.value}
 **Audio File**: `{recording.stored_filename}`
 
-## Summary
+## Note
 {recording.summary}
 
 ## Transcript

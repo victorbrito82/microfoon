@@ -17,8 +17,15 @@ TARGET_VOLUME_NAME = os.getenv("TARGET_VOLUME_NAME", "VOICE")
 DATABASE_URL = f"sqlite:///{BASE_DIR}/microfoon.db"
 
 # Prompts
-PROMPT_SUMMARY = os.getenv("PROMPT_SUMMARY", "Summarize the following audio transcript.")
-PROMPT_TITLE = os.getenv("PROMPT_TITLE", "Generate a concise title for this audio transcript.")
+def load_prompt(filename, default):
+    try:
+        with open(BASE_DIR / "prompts" / filename, "r") as f:
+            return f.read().strip()
+    except FileNotFoundError:
+        return default
+
+PROMPT_CLEANUP = load_prompt("cleanup.txt", "Clean up the following audio transcript.")
+PROMPT_TITLE = load_prompt("title.txt", "Generate a concise title for this audio transcript.")
 
 # Ensure storage directories exist
 if not STORAGE_DIRECTORY.exists():

@@ -154,3 +154,11 @@ cython_debug/
 # IDEs
 .vscode/
 .idea/
+
+# Local data
+recordings/
+*.db
+
+# Local data
+recordings/
+*.db

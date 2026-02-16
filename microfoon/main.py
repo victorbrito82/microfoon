@@ -72,7 +72,7 @@ def process_usb_drive(drive_path: Path):
             
             if result:
                 recording.transcript = result.get("transcript")
-                recording.summary = result.get("summary")
+                recording.summary = result.get("cleanup")
                 recording.title = result.get("title")
                 recording.status = ProcessingStatus.COMPLETED
                 

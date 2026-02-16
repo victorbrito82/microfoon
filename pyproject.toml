@@ -11,9 +11,7 @@ dependencies = [
     "sqlalchemy",
     "rich",
     "python-dotenv",
-    "fastapi",
-    "uvicorn",
-    "python-multipart",
+    "audioop-lts; python_version >= '3.13'",
 ]
 
 [build-system]

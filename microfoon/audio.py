@@ -16,6 +16,8 @@ def find_audio_files(directory: Path):
     audio_files = []
     for root, dirs, files in os.walk(directory):
         for file in files:
+            if file.startswith("._"):
+                continue
             if Path(file).suffix.lower() in AUDIO_EXTENSIONS:
                 audio_files.append(Path(root) / file)
     return audio_files

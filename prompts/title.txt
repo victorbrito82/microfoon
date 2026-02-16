@@ -1,0 +1,4 @@
+Generate a concise conversation-style title (3–5 words max).
+No quotes or emojis.
+Title should hint at the main topic.
+STRICTLY return the title in the same language as the transcript (Dutch if Dutch, English if English).
