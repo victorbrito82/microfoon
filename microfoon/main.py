@@ -8,7 +8,7 @@ from rich.panel import Panel
 
 from microfoon.database import init_db, get_db, Recording, ProcessingStatus
 from microfoon.usb_monitor import USBMonitor
-from microfoon.audio import find_audio_files, copy_and_rename, compress_audio
+from microfoon.audio import find_audio_files, copy_and_rename, compress_audio, get_audio_duration, chunk_audio
 from microfoon.intelligence import GeminiProcessor
 from microfoon.exporter import ObsidianExporter
 from microfoon.config import STORAGE_DIRECTORY, TARGET_VOLUME_NAME
@@ -68,7 +68,22 @@ def process_usb_drive(drive_path: Path):
 
         # Transcribe & Summarize via Gemini
         try:
-            result = processor.process_audio(stored_path)
+            duration = get_audio_duration(stored_path)
+            if duration > 600:
+                console.print(f"[yellow]Audio duration ({duration/60:.1f}m) exceeds 10 minutes. Segmenting for robust processing...[/yellow]")
+                chunks = chunk_audio(stored_path, 600)
+                result = processor.process_large_audio(chunks)
+                
+                # Cleanup partial mp3 chunks
+                if len(chunks) > 1:
+                    for chunk in chunks:
+                        if chunk != stored_path and chunk.exists():
+                            try:
+                                chunk.unlink()
+                            except:
+                                pass
+            else:
+                result = processor.process_audio(stored_path)
             
             if result:
                 recording.transcript = result.get("transcript")

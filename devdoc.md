@@ -17,6 +17,3 @@ We want to make an app that I have an application that when a USB is plugged in 
 in the env file store the api key of the llm;
 
 8. use sql lite. The llm needs to be able to recognize languge and to know dutch and english.
-
-
-    

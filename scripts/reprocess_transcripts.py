@@ -1,6 +1,7 @@
 import sys
 import os
 import argparse
+from datetime import datetime
 from pathlib import Path
 from rich.console import Console
 from rich.prompt import Confirm
@@ -72,6 +73,7 @@ def regenerate(recording_id=None, original_filename=None, auto_confirm=False, ex
                 if exported_path:
                     rec.obsidian_path = str(exported_path)
                     rec.status = ProcessingStatus.EXPORTED
+                    rec.reprocessed_at = datetime.now()
                     session.commit()
                     console.print(f"[green]Re-exported:[/green] {exported_path}")
                 else:
@@ -81,13 +83,25 @@ def regenerate(recording_id=None, original_filename=None, auto_confirm=False, ex
             continue
 
         try:
-            # Re-process with Gemini (using new PROMPT_CLEANUP and PROMPT_TITLE)
-            result = processor.process_audio(file_path)
+            # Use existing transcript if available, otherwise fallback to audio re-transcription
+            result = None
+            if rec.transcript:
+                console.print("[dim]Using existing transcript for reprocessing...[/dim]")
+                result = processor.process_transcript(rec.transcript)
+            else:
+                console.print("[dim]No transcript found. Falling back to audio processing...[/dim]")
+                result = processor.process_audio(file_path)
 
             if result:
-                rec.transcript = result.get("transcript")
+                # Update summary and title, but KEEP original transcript if we used process_transcript
                 rec.summary = result.get("cleanup")
                 rec.title = result.get("title")
+                
+                # If we did a full audio process, we also update the transcript
+                if not rec.transcript:
+                    rec.transcript = result.get("transcript")
+                
+                rec.reprocessed_at = datetime.now()
 
                 # Re-export
                 try:
@@ -102,6 +116,12 @@ def regenerate(recording_id=None, original_filename=None, auto_confirm=False, ex
 
         except Exception as e:
             console.print(f"[red]Error processing {rec.original_filename}: {e}[/red]")
+            
+        # Add a delay to avoid hitting Gemini rate limits (e.g. 15 RPM)
+        if not export_only:
+            console.print("[dim]Waiting 3 seconds before next file...[/dim]")
+            import time
+            time.sleep(3)
 
     console.print("[bold green]Regeneration Complete![/bold green]")
 

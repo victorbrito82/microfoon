@@ -2,7 +2,7 @@ from pathlib import Path
 from datetime import datetime
 from rich.console import Console
 
-from microfoon.config import OBSIDIAN_VAULT_PATH
+from microfoon.config import OBSIDIAN_VAULT_PATH, STORAGE_DIRECTORY
 from microfoon.database import Recording, ProcessingStatus
 
 console = Console()
@@ -20,11 +20,17 @@ class ObsidianExporter:
         filename = f"{safe_title}.md"
         file_path = self.vault_path / filename
 
+        reprocessed_tag = ""
+        if recording.reprocessed_at:
+            reprocessed_tag = f" (reprocessed at {recording.reprocessed_at.strftime('%Y-%m-%d %H:%M:%S')})"
+
+        absolute_source = (STORAGE_DIRECTORY / recording.stored_filename).resolve()
+
         content = f"""# {recording.title}
 
 **Date**: {recording.created_at.strftime("%Y-%m-%d %H:%M:%S")}
-**Source**: [[{recording.original_filename}]]
-**Status**: {recording.status.value}
+**Source**: `{absolute_source}`
+**Status**: {recording.status.value}{reprocessed_tag}
 **Audio File**: `{recording.stored_filename}`
 
 ## Note

@@ -6,11 +6,10 @@ USB Audio Processor with Gemini AI.
 
 This project includes scripts to help you manage your recordings. To run them, use the python interpreter from the virtual environment:
 
-### Regenerate Exports
-If you change the prompts (`cleanup.txt` or `title.txt`), you can re-process your existing audio files to update the Obsidian notes:
-
+#### Reprocess Recordings
+If you want to re-process existing recordings (e.g., to use better prompts or regenerate missing fields):
 ```bash
-venv/bin/python scripts/regenerate_exports.py
+./venv/bin/python3 scripts/reprocess_transcripts.py --id [ID]
 ```
 
 ### Check Consistency
@@ -28,7 +27,9 @@ venv/bin/python scripts/check_consistency.py
 
 ## Usage
 
-```bash
+To start the application, simply run these commands in your standard terminal (you do **not** need to type `bash` first):
+
+```sh
 source venv/bin/activate
 python -m microfoon.main
 ```

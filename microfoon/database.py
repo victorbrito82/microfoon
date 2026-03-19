@@ -32,6 +32,7 @@ class Recording(Base):
     
     # Metadata
     created_at = Column(DateTime, default=datetime.now)
+    reprocessed_at = Column(DateTime, nullable=True)
     status = Column(Enum(ProcessingStatus), default=ProcessingStatus.PENDING)
     obsidian_path = Column(String, nullable=True)
     error_message = Column(Text, nullable=True)
